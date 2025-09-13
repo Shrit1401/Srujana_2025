@@ -92,6 +92,7 @@ export const translations = {
     specifyHolidays: "Specify any holidays this week.",
     holidaysPlaceholder: "e.g., Wednesday",
     generatePlan: "Generate Plan",
+    translationNote: "Translation may not be accurate",
   },
   hi: {
     brand: "विद्यापाक।",
@@ -161,6 +162,7 @@ export const translations = {
     specifyHolidays: "इस सप्ताह की कोई छुट्टियां निर्दिष्ट करें।",
     holidaysPlaceholder: "जैसे, बुधवार",
     generatePlan: "योजना बनाएं",
+    translationNote: "अनुवाद गलत हो सकता है",
   },
   mr: {
     brand: "विद्यापाक।",
@@ -232,6 +234,7 @@ export const translations = {
     specifyHolidays: "या आठवड्यातील कोणत्याही सुट्ट्या निर्दिष्ट करा.",
     holidaysPlaceholder: "उदा., बुधवार",
     generatePlan: "योजना तयार करा",
+    translationNote: "अनुवाद चुकीचा असू शकतो",
   },
   ta: {
     brand: "வித்யாபாக்।",
@@ -306,6 +309,7 @@ export const translations = {
     specifyHolidays: "இந்த வாரத்தின் எந்த விடுமுறைகளையும் குறிப்பிடவும்.",
     holidaysPlaceholder: "எ.கா., புதன்கிழமை",
     generatePlan: "திட்டத்தை உருவாக்கவும்",
+    translationNote: "மொழிபெயர்ப்பு துல்லியமாக இருக்காது",
   },
   te: {
     brand: "విద్యాపాక్।",
@@ -376,6 +380,7 @@ export const translations = {
     specifyHolidays: "ఈ వారంలోని ఏ సెలవులైనా పేర్కొనండి.",
     holidaysPlaceholder: "ఉదా., బుధవారం",
     generatePlan: "ప్లాన్‌ను సృష్టించండి",
+    translationNote: "అనువాదం ఖచ్చితంగా ఉండకపోవచ్చు",
   },
 } as const;
 
