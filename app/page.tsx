@@ -9,11 +9,11 @@ const LandingPage = () => {
       <div className="absolute inset-0">
         <div id="movie-bg" />
       </div>
-      <main className="relative text-white min-h-screen overflow-hidden bg-gradient-to-tr from-[#3f51b5] via-teal-600 to-white">
+      <main className="relative min-h-screen overflow-hidden bg-white text-black">
         <div className="flex z-[3] justify-between px-4 md:px-10 h-[10vh] items-center relative">
           <div className="flex gap-2 items-center">
-            <span className="text-3xl font-semibold tracking-wide playfair">
-              Vidyapak
+            <span className="text-3xl font-semibold tracking-wide">
+              Vidyapak.
             </span>
           </div>
 
