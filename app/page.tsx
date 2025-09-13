@@ -1,73 +1,40 @@
-import React from "react";
-import { Camera, Calendar, Presentation, Puzzle } from "lucide-react";
+"use client";
+import React, { useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
-const DashboardPage = () => {
-  const features = [
-    {
-      icon: Puzzle,
-      title: "Class Sparks",
-      description: "sparks curiosity in class",
-      href: "/sparks",
-    },
-    {
-      icon: Camera,
-      title: "Photo-to-Lesson Kit",
-      description: "Transform photos into lesson plans",
-      href: "/lesson",
-    },
-    {
-      icon: Calendar,
-      title: "Weekly Planner",
-      description: "Generate weekly schedules",
-      href: "/planner",
-    },
-    {
-      icon: Presentation,
-      title: "Easy Slides",
-      description: "Create presentations with ease",
-      href: "/easy-slides",
-    },
-  ];
-
+const LandingPage = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-6 py-12">
-        <div className="text-left mb-16">
-          <h1 className="text-6xl font-bold mb-2">
-            Welcome, <span className="text-primary">Anjali</span>
-          </h1>
-          <p className="text-2xl text-muted-foreground">
-            Here's what you can do today:
-          </p>
+    <>
+      <div className="absolute inset-0">
+        <div id="movie-bg" />
+      </div>
+      <main className="relative text-white min-h-screen overflow-hidden bg-gradient-to-tr from-[#3f51b5] via-teal-600 to-white">
+        <div className="flex z-[3] justify-between px-4 md:px-10 h-[10vh] items-center relative">
+          <div className="flex gap-2 items-center">
+            <span className="text-3xl font-semibold tracking-wide playfair">
+              Vidyapak
+            </span>
+          </div>
+
+          <Link href="/dashboard">
+            <Button>Get Started</Button>
+          </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-          {features.map((feature, index) => {
-            const IconComponent = feature.icon;
-            return (
-              <a
-                href={feature.href}
-                key={index}
-                className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow duration-300 cursor-pointer group"
-              >
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors duration-300">
-                    <IconComponent className="w-8 h-8 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-bold text-primary mb-2">
-                    {feature.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {feature.description}
-                  </p>
-                </div>
-              </a>
-            );
-          })}
+        <div className="flex flex-col items-center justify-center h-[80vh] w-full mx-auto gap-6">
+          <h1 className="text-6xl font-bold text-center mb-2">
+            Helping Teachers Engage <br /> with Students
+          </h1>
+          <Link href="/dashboard">
+            <Button className="px-8 py-3 text-lg rounded-full" size="lg">
+              Start
+            </Button>
+          </Link>
         </div>
-      </div>
-    </div>
+      </main>
+    </>
   );
 };
 
-export default DashboardPage;
+export default LandingPage;
