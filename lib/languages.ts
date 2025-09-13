@@ -41,7 +41,7 @@ export const translations = {
     signOut: "Sign Out",
     classSparks: "Class Sparks",
     sparksCuriosity: "sparks curiosity in class",
-    photoToLesson: "Photo-to-Lesson Kit",
+    photoToLesson: "Photo to Lesson Kit",
     transformPhotos: "Transform photos into lesson plans",
     weeklyPlanner: "Weekly Planner",
     generateSchedules: "Generate weekly schedules",
