@@ -8,37 +8,39 @@ import {
   User,
 } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
-
-const FEATURES = [
-  {
-    icon: Puzzle,
-    title: "Class Sparks",
-    description: "sparks curiosity in class",
-    href: "/sparks",
-  },
-  {
-    icon: Camera,
-    title: "Photo-to-Lesson Kit",
-    description: "Transform photos into lesson plans",
-    href: "/lesson",
-  },
-  {
-    icon: Calendar,
-    title: "Weekly Planner",
-    description: "Generate weekly schedules",
-    href: "/planner",
-  },
-  {
-    icon: Presentation,
-    title: "AI Easy Slides",
-    description: "Create presentations with ease using AI",
-    href: "/slides",
-  },
-];
+import { useLanguage } from "@/lib/language-context";
 
 const DashboardPage = () => {
+  const { t } = useLanguage();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const FEATURES = [
+    {
+      icon: Puzzle,
+      title: t("classSparks"),
+      description: t("sparksCuriosity"),
+      href: "/sparks",
+    },
+    {
+      icon: Camera,
+      title: t("photoToLesson"),
+      description: t("transformPhotos"),
+      href: "/lesson",
+    },
+    {
+      icon: Calendar,
+      title: t("weeklyPlanner"),
+      description: t("generateSchedules"),
+      href: "/planner",
+    },
+    {
+      icon: Presentation,
+      title: t("aiEasySlides"),
+      description: t("createPresentations"),
+      href: "/slides",
+    },
+  ];
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -62,7 +64,7 @@ const DashboardPage = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">{t("loading")}</p>
         </div>
       </div>
     );
@@ -75,22 +77,22 @@ const DashboardPage = () => {
           {user ? (
             <>
               <h1 className="text-6xl font-bold mb-2">
-                Welcome,{" "}
+                {t("welcome")},{" "}
                 <span className="text-primary">
                   {user.displayName || "User"}
                 </span>
               </h1>
               <p className="text-2xl text-muted-foreground mb-4">
-                Here's what you can do today:
+                {t("heresWhat")}
               </p>
             </>
           ) : (
             <>
               <h1 className="text-6xl font-bold mb-2">
-                Welcome to <span className="text-primary">Vidyapak</span>
+                {t("welcomeTo")} <span className="text-primary">Vidyapak</span>
               </h1>
               <p className="text-2xl text-muted-foreground mb-4">
-                Sign in to access your dashboard:
+                {t("signInToAccess")}
               </p>
               <button
                 onClick={handleSignIn}
@@ -114,33 +116,51 @@ const DashboardPage = () => {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                Sign in with Google
+                {t("signInWithGoogle")}
               </button>
             </>
           )}
         </div>
 
         {user && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
             {FEATURES.map((feature, index) => {
               const IconComponent = feature.icon;
               return (
                 <a
                   href={feature.href}
                   key={index}
-                  className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow duration-300 cursor-pointer group"
+                  className="group relative bg-gradient-to-br from-card to-card/80 border border-border/50 rounded-2xl p-8 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 cursor-pointer overflow-hidden backdrop-blur-sm"
+                  style={{
+                    transform: "translateY(0)",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform =
+                      "translateY(-8px) scale(1.02)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0) scale(1)";
+                  }}
                 >
-                  <div className="flex flex-col items-center text-center">
-                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors duration-300">
-                      <IconComponent className="w-8 h-8 text-primary" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+
+                  <div className="relative flex flex-col items-center text-center">
+                    <div className="">
+                      <IconComponent className="w-10 h-10 text-primary" />
                     </div>
-                    <h3 className="text-lg font-bold text-primary mb-2">
+
+                    <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
                       {feature.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground leading-relaxed group-hover:text-foreground/80 transition-colors duration-300">
                       {feature.description}
                     </p>
+
+                    <div className="mt-4 w-0 group-hover:w-12 h-0.5 bg-gradient-to-r from-primary to-primary/50 transition-all duration-500 rounded-full"></div>
                   </div>
+
+                  <div className="absolute top-4 right-4 w-2 h-2 bg-primary/30 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100"></div>
+                  <div className="absolute bottom-4 left-4 w-1 h-1 bg-primary/20 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 delay-200"></div>
                 </a>
               );
             })}

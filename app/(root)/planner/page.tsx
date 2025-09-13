@@ -2,8 +2,10 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/lib/language-context";
 
 const PlannerPage = () => {
+  const { t } = useLanguage();
   const [syllabus, setSyllabus] = useState("");
   const [teachingDays, setTeachingDays] = useState("");
   const [holidays, setHolidays] = useState("");
@@ -17,57 +19,51 @@ const PlannerPage = () => {
       <div className="max-w-2xl mx-auto px-6 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Auto-Plan My Week
+            {t("autoPlanWeek")}
           </h1>
-          <p className="text-lg text-gray-600">
-            Generate a weekly teaching plan from your syllabus or key topics.
-          </p>
+          <p className="text-lg text-gray-600">{t("generateWeeklyPlan")}</p>
         </div>
 
         <div className="space-y-8">
           <div>
             <label className="block text-lg font-semibold text-gray-900 mb-2">
-              Textbook Syllabus or Key Topics
+              {t("textbookSyllabus")}
             </label>
             <p className="text-sm text-gray-600 mb-3">
-              Enter the syllabus content or a list of topics for the week.
+              {t("enterSyllabusContent")}
             </p>
             <textarea
               value={syllabus}
               onChange={(e) => setSyllabus(e.target.value)}
-              placeholder="e.g., Chapter 1: The Solar System, Chapter 2: Living Organisms, ..."
+              placeholder={t("syllabusPlaceholder")}
               className="w-full h-32 px-4 py-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
 
           <div>
             <label className="block text-lg font-semibold text-gray-900 mb-2">
-              Number of Teaching Days
+              {t("numberOfTeachingDays")}
             </label>
-            <p className="text-sm text-gray-600 mb-3">
-              How many days will you be teaching this week?
-            </p>
+            <p className="text-sm text-gray-600 mb-3">{t("howManyDays")}</p>
             <input
               type="text"
               value={teachingDays}
               onChange={(e) => setTeachingDays(e.target.value)}
-              placeholder="e.g., 5"
+              placeholder={t("teachingDaysPlaceholder")}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
 
           <div>
             <label className="block text-lg font-semibold text-gray-900 mb-2">
-              Holidays (Optional)
+              {t("holidays")}
             </label>
-            <p className="text-sm text-gray-600 mb-3">
-              Specify any holidays this week.
-            </p>
+            <p className="text-sm text-gray-600 mb-3">{t("specifyHolidays")}</p>
             <input
               type="text"
               value={holidays}
               onChange={(e) => setHolidays(e.target.value)}
-              placeholder="e.g., Wednesday"
+              placeholder={t("holidaysPlaceholder")}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
@@ -78,7 +74,7 @@ const PlannerPage = () => {
               className="w-full h-12 text-lg font-medium"
               size="lg"
             >
-              Generate Plan
+              {t("generatePlan")}
             </Button>
           </div>
         </div>

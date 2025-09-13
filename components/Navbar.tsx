@@ -15,9 +15,12 @@ import {
   User,
 } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon, GlobeIcon } from "lucide-react";
+import { useLanguage } from "@/lib/language-context";
+import textLogo from "@/public/textlogo.png";
 
 const Navbar = () => {
+  const { t, setLanguage, availableLanguages, currentLanguage } = useLanguage();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -50,14 +53,38 @@ const Navbar = () => {
     <nav className="flex items-center justify-between px-18 py-4">
       <a href="/" className="flex items-center cursor-pointer">
         <Image
-          src="/logo.png"
+          src={textLogo}
           alt="Vidyapak Logo"
-          width={60}
-          height={60}
+          width={120}
+          height={120}
           className="mr-2"
         />
       </a>
       <div className="flex items-center gap-4">
+        {user && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <GlobeIcon className="h-4 w-4" />
+                <span className="text-md">{t("language")}</span>
+                <ChevronDownIcon className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {Object.entries(availableLanguages).map(([code, language]) => (
+                <DropdownMenuItem
+                  key={code}
+                  onClick={() =>
+                    setLanguage(code as keyof typeof availableLanguages)
+                  }
+                  className={currentLanguage === code ? "bg-blue-50" : ""}
+                >
+                  {language.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
         {!loading && (
           <>
             {user ? (
@@ -80,13 +107,13 @@ const Navbar = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={handleSignOut}>
-                    Sign Out
+                    {t("signOut")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <Button onClick={handleSignIn} size="sm">
-                Sign In
+                {t("signIn")}
               </Button>
             )}
           </>

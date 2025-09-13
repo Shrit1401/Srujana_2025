@@ -3,7 +3,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Send, Bot, User, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { sendSpark } from "@/lib/spark.server";
+import { streamSpark } from "@/lib/spark.server";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { useLanguage } from "@/lib/language-context";
+import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 interface Message {
   id: string;
@@ -13,11 +18,12 @@ interface Message {
 }
 
 const SparkPage = () => {
+  const { t, currentLanguage } = useLanguage();
+  const [user, setUser] = useState<FirebaseUser | null>(null);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      content:
-        "Hello! I'm your AI teaching assistant. How can I help spark curiosity in your classroom today?",
+      content: t("initialGreeting"),
       sender: "ai",
       timestamp: new Date(),
     },
@@ -26,10 +32,40 @@ const SparkPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [lastMessageTime, setLastMessageTime] = useState<number>(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const hasUpdatedInitialMessage = useRef(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (user && !hasUpdatedInitialMessage.current) {
+      const userName = user.displayName?.split(" ")[0] || "Teacher";
+      const personalizedGreeting = t("personalizedGreeting").replace(
+        "{name}",
+        userName
+      );
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === "1"
+            ? {
+                ...msg,
+                content: personalizedGreeting,
+              }
+            : msg
+        )
+      );
+      hasUpdatedInitialMessage.current = true;
+    }
+  }, [user?.uid, t]);
 
   useEffect(() => {
     scrollToBottom();
@@ -43,8 +79,7 @@ const SparkPage = () => {
     if (trimmedInput.length > 2000) {
       const errorResponse: Message = {
         id: Date.now().toString(),
-        content:
-          "Your message is too long. Please keep it under 2000 characters for better processing.",
+        content: t("yourMessageTooLong"),
         sender: "ai",
         timestamp: new Date(),
       };
@@ -58,7 +93,7 @@ const SparkPage = () => {
     if (timeSinceLastMessage < 1000) {
       const errorResponse: Message = {
         id: Date.now().toString(),
-        content: "Please wait a moment before sending another message.",
+        content: t("pleaseWait"),
         sender: "ai",
         timestamp: new Date(),
       };
@@ -78,50 +113,68 @@ const SparkPage = () => {
     setIsLoading(true);
     setLastMessageTime(now);
 
+    const aiMessageId = (Date.now() + 1).toString();
+    const initialAiMessage: Message = {
+      id: aiMessageId,
+      content: "",
+      sender: "ai",
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, initialAiMessage]);
+    setIsLoading(false);
+
     try {
-      const response = await sendSpark(trimmedInput);
+      const userName = user?.displayName?.split(" ")[0] || "Teacher";
+      const chunks = await streamSpark(trimmedInput, currentLanguage, userName);
+      let fullContent = "";
 
-      if (!response) {
-        throw new Error("No response received from server");
+      for (const chunk of chunks) {
+        if (!chunk.success) {
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === aiMessageId ? { ...msg, content: chunk.message } : msg
+            )
+          );
+          break;
+        }
+
+        if (chunk.isStreaming) {
+          fullContent += chunk.message;
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === aiMessageId ? { ...msg, content: fullContent } : msg
+            )
+          );
+          await new Promise((resolve) => setTimeout(resolve, 50));
+        } else {
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === aiMessageId ? { ...msg, content: fullContent } : msg
+            )
+          );
+        }
       }
-
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        content:
-          response.message ||
-          "I'm sorry, I couldn't generate a response. Please try again.",
-        sender: "ai",
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, aiResponse]);
     } catch (error) {
       console.error("Error sending message:", error);
 
-      let errorMessage =
-        "I'm sorry, I'm having trouble processing your request right now. Please try again in a moment.";
+      let errorMessage = t("sorryTrouble");
 
       if (error instanceof Error) {
         if (error.message.includes("fetch")) {
-          errorMessage =
-            "Network connection issue. Please check your internet connection and try again.";
+          errorMessage = t("networkIssue");
         } else if (error.message.includes("timeout")) {
-          errorMessage =
-            "Request timed out. Please try again with a shorter message.";
+          errorMessage = t("requestTimeout");
         } else if (error.message.includes("No response")) {
-          errorMessage =
-            "Server is not responding. Please try again in a moment.";
+          errorMessage = t("serverNotResponding");
         }
       }
 
-      const errorResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        content: errorMessage,
-        sender: "ai",
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorResponse]);
-    } finally {
-      setIsLoading(false);
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === aiMessageId ? { ...msg, content: errorMessage } : msg
+        )
+      );
     }
   };
 
@@ -133,16 +186,18 @@ const SparkPage = () => {
   };
 
   return (
-    <div className="h-screen bg-background flex flex-col">
+    <div className="bg-background flex flex-col">
       <div className="flex flex-col h-[80vh] max-w-4xl mx-auto w-full">
         <div className="flex items-center gap-3 p-4 border-b bg-card flex-shrink-0">
           <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
             <Sparkles className="w-4 h-4 text-primary" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-primary">Class Sparks</h1>
+            <h1 className="text-lg font-bold text-primary">
+              {t("classSparks")}
+            </h1>
             <p className="text-xs text-muted-foreground">
-              AI Teaching Assistant
+              {t("makeClassMoreClasssy")}
             </p>
           </div>
         </div>
@@ -169,9 +224,83 @@ const SparkPage = () => {
                       : "bg-muted text-foreground"
                   }`}
                 >
-                  <p className="text-xs whitespace-pre-wrap">
-                    {message.content}
-                  </p>
+                  <div className="text-sm prose prose-sm max-w-none dark:prose-invert">
+                    {message.sender === "ai" ? (
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          p: ({ children }) => (
+                            <p className="mb-2 last:mb-0">{children}</p>
+                          ),
+                          ul: ({ children }) => (
+                            <ul className="list-disc list-inside mb-2 space-y-1">
+                              {children}
+                            </ul>
+                          ),
+                          ol: ({ children }) => (
+                            <ol className="list-decimal list-inside mb-2 space-y-1">
+                              {children}
+                            </ol>
+                          ),
+                          li: ({ children }) => (
+                            <li className="text-sm">{children}</li>
+                          ),
+                          h1: ({ children }) => (
+                            <h1 className="text-xl font-bold mb-2">
+                              {children}
+                            </h1>
+                          ),
+                          h2: ({ children }) => (
+                            <h2 className="text-lg font-bold mb-2">
+                              {children}
+                            </h2>
+                          ),
+                          h3: ({ children }) => (
+                            <h3 className="text-md font-bold mb-1">
+                              {children}
+                            </h3>
+                          ),
+                          code: ({ children }) => (
+                            <code className="bg-background/50 px-1 py-0.5 rounded text-xs font-mono">
+                              {children}
+                            </code>
+                          ),
+                          pre: ({ children }) => (
+                            <pre className="bg-background/50 p-2 rounded text-xs font-mono overflow-x-auto mb-2">
+                              {children}
+                            </pre>
+                          ),
+                          blockquote: ({ children }) => (
+                            <blockquote className="border-l-2 border-primary/30 pl-2 italic mb-2">
+                              {children}
+                            </blockquote>
+                          ),
+                          strong: ({ children }) => (
+                            <strong className="font-semibold">
+                              {children}
+                            </strong>
+                          ),
+                          em: ({ children }) => (
+                            <em className="italic">{children}</em>
+                          ),
+                          a: ({ children, href }) => (
+                            <a
+                              href={href}
+                              className="text-primary underline hover:no-underline"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {children}
+                            </a>
+                          ),
+                        }}
+                      >
+                        {message.content}
+                      </ReactMarkdown>
+                    ) : (
+                      <p className="whitespace-pre-wrap">{message.content}</p>
+                    )}
+                  </div>
                   <p className="text-xs opacity-70 mt-1">
                     {message.timestamp.getHours().toString().padStart(2, "0")}:
                     {message.timestamp.getMinutes().toString().padStart(2, "0")}
@@ -210,14 +339,14 @@ const SparkPage = () => {
           </div>
         </div>
 
-        <div className="border-t bg-card p-4 flex-shrink-0">
-          <div className="flex gap-2">
+        <div className="fixed bottom-0 left-0 w-full border-t bg-card p-4 flex-shrink-0 z-50">
+          <div className="max-w-2xl mx-auto flex gap-2">
             <div className="flex-1 relative">
               <textarea
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask me anything about teaching, lesson plans, or classroom activities..."
+                placeholder={t("askMeAnything")}
                 className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 rows={1}
                 maxLength={2000}

@@ -10,8 +10,10 @@ import {
   StickyNote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/lib/language-context";
 
 const LessonPage = () => {
+  const { t } = useLanguage();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [activities, setActivities] = useState({
@@ -62,10 +64,10 @@ const LessonPage = () => {
       <div className="container mx-auto px-6 py-12 max-w-6xl">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-primary mb-4">
-            Photo-to-Lesson Kit
+            {t("photoToLesson")}
           </h1>
           <p className="text-lg text-muted-foreground">
-            Click a photo of a textbook page to get started.
+            {t("clickPhotoTextbook")}
           </p>
         </div>
 
@@ -109,10 +111,10 @@ const LessonPage = () => {
                 ) : (
                   <div className="space-y-2">
                     <p className="text-lg font-medium">
-                      Click to upload a photo or drag and drop
+                      {t("clickUploadPhoto")}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Supports JPG, PNG, and other image formats
+                      {t("supportsFormats")}
                     </p>
                   </div>
                 )}
@@ -124,7 +126,7 @@ const LessonPage = () => {
                   className="bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                   <Upload className="w-4 h-4 mr-2" />
-                  {selectedFile ? "Change Photo" : "Take a Photo"}
+                  {selectedFile ? t("changePhoto") : t("takePhoto")}
                 </Button>
               </div>
             </div>
@@ -133,10 +135,10 @@ const LessonPage = () => {
           <div className="space-y-6">
             <div className="bg-card border border-border rounded-lg p-6">
               <h2 className="text-xl font-bold text-primary mb-2">
-                Configure your lesson kit
+                {t("configureLessonKit")}
               </h2>
               <p className="text-muted-foreground mb-6">
-                Select the types of activities you want to generate.
+                {t("selectActivities")}
               </p>
 
               <div className="space-y-4">
@@ -154,7 +156,7 @@ const LessonPage = () => {
                     )}
                   </button>
                   <FileText className="w-5 h-5 text-primary" />
-                  <span className="font-medium">Worksheet</span>
+                  <span className="font-medium">{t("worksheet")}</span>
                 </div>
 
                 <div className="flex items-center space-x-3">
@@ -171,7 +173,7 @@ const LessonPage = () => {
                     )}
                   </button>
                   <Palette className="w-5 h-5 text-primary" />
-                  <span className="font-medium">Drawing Activity</span>
+                  <span className="font-medium">{t("drawingActivity")}</span>
                 </div>
 
                 <div className="flex items-center space-x-3">
@@ -188,7 +190,7 @@ const LessonPage = () => {
                     )}
                   </button>
                   <StickyNote className="w-5 h-5 text-primary" />
-                  <span className="font-medium">Notes</span>
+                  <span className="font-medium">{t("notes")}</span>
                 </div>
               </div>
 
@@ -197,7 +199,7 @@ const LessonPage = () => {
                 disabled={!selectedFile}
                 className="w-full mt-8 bg-primary hover:bg-primary/90 text-primary-foreground py-3 text-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Generate Lesson Kit
+                {t("generateLessonKit")}
               </Button>
             </div>
           </div>
