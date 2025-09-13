@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Send, Bot, User, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { sendSpark } from "@/lib/spark.server";
 
 interface Message {
   id: string;
@@ -23,6 +24,7 @@ const SparkPage = () => {
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [lastMessageTime, setLastMessageTime] = useState<number>(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -34,11 +36,39 @@ const SparkPage = () => {
   }, [messages]);
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim() || isLoading) return;
+    const trimmedInput = inputValue.trim();
+
+    if (!trimmedInput || isLoading) return;
+
+    if (trimmedInput.length > 2000) {
+      const errorResponse: Message = {
+        id: Date.now().toString(),
+        content:
+          "Your message is too long. Please keep it under 2000 characters for better processing.",
+        sender: "ai",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorResponse]);
+      return;
+    }
+
+    const now = Date.now();
+    const timeSinceLastMessage = now - lastMessageTime;
+
+    if (timeSinceLastMessage < 1000) {
+      const errorResponse: Message = {
+        id: Date.now().toString(),
+        content: "Please wait a moment before sending another message.",
+        sender: "ai",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorResponse]);
+      return;
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      content: inputValue,
+      content: trimmedInput,
       sender: "user",
       timestamp: new Date(),
     };
@@ -46,29 +76,53 @@ const SparkPage = () => {
     setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
     setIsLoading(true);
+    setLastMessageTime(now);
 
-    setTimeout(() => {
+    try {
+      const response = await sendSpark(trimmedInput);
+
+      if (!response) {
+        throw new Error("No response received from server");
+      }
+
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: generateAIResponse(inputValue),
+        content:
+          response.message ||
+          "I'm sorry, I couldn't generate a response. Please try again.",
         sender: "ai",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, aiResponse]);
-      setIsLoading(false);
-    }, 1000 + Math.random() * 2000);
-  };
+    } catch (error) {
+      console.error("Error sending message:", error);
 
-  const generateAIResponse = (userInput: string): string => {
-    const responses = [
-      "That's a great question! Let me help you create an engaging lesson around that topic.",
-      "I can suggest some interactive activities that will keep your students engaged and curious.",
-      "Here's a creative approach you can use to make this concept more interesting for your class.",
-      "Let me help you design a hands-on experiment that will spark their interest in this subject.",
-      "I have some innovative teaching strategies that work well for this age group.",
-      "That's an excellent teaching challenge! Here's how we can make it more interactive and fun.",
-    ];
-    return responses[Math.floor(Math.random() * responses.length)];
+      let errorMessage =
+        "I'm sorry, I'm having trouble processing your request right now. Please try again in a moment.";
+
+      if (error instanceof Error) {
+        if (error.message.includes("fetch")) {
+          errorMessage =
+            "Network connection issue. Please check your internet connection and try again.";
+        } else if (error.message.includes("timeout")) {
+          errorMessage =
+            "Request timed out. Please try again with a shorter message.";
+        } else if (error.message.includes("No response")) {
+          errorMessage =
+            "Server is not responding. Please try again in a moment.";
+        }
+      }
+
+      const errorResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        content: errorMessage,
+        sender: "ai",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorResponse]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -80,7 +134,7 @@ const SparkPage = () => {
 
   return (
     <div className="h-screen bg-background flex flex-col">
-      <div className="flex flex-col h-full max-w-4xl mx-auto w-full">
+      <div className="flex flex-col h-[80vh] max-w-4xl mx-auto w-full">
         <div className="flex items-center gap-3 p-4 border-b bg-card flex-shrink-0">
           <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
             <Sparkles className="w-4 h-4 text-primary" />
@@ -166,6 +220,7 @@ const SparkPage = () => {
                 placeholder="Ask me anything about teaching, lesson plans, or classroom activities..."
                 className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 rows={1}
+                maxLength={2000}
                 style={{
                   minHeight: "36px",
                   maxHeight: "80px",
@@ -177,10 +232,17 @@ const SparkPage = () => {
                     Math.min(target.scrollHeight, 80) + "px";
                 }}
               />
+              {inputValue.length > 1500 && (
+                <div className="absolute bottom-1 right-2 text-xs text-muted-foreground">
+                  {inputValue.length}/2000
+                </div>
+              )}
             </div>
             <Button
               onClick={handleSendMessage}
-              disabled={!inputValue.trim() || isLoading}
+              disabled={
+                !inputValue.trim() || isLoading || inputValue.length > 2000
+              }
               className="px-3 py-2 h-9"
               size="sm"
             >

@@ -9,6 +9,33 @@ import {
 } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
 
+const FEATURES = [
+  {
+    icon: Puzzle,
+    title: "Class Sparks",
+    description: "sparks curiosity in class",
+    href: "/sparks",
+  },
+  {
+    icon: Camera,
+    title: "Photo-to-Lesson Kit",
+    description: "Transform photos into lesson plans",
+    href: "/lesson",
+  },
+  {
+    icon: Calendar,
+    title: "Weekly Planner",
+    description: "Generate weekly schedules",
+    href: "/planner",
+  },
+  {
+    icon: Presentation,
+    title: "AI Easy Slides",
+    description: "Create presentations with ease using AI",
+    href: "/slides",
+  },
+];
+
 const DashboardPage = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -22,46 +49,11 @@ const DashboardPage = () => {
     return () => unsubscribe();
   }, []);
 
-  const features = [
-    {
-      icon: Puzzle,
-      title: "Class Sparks",
-      description: "sparks curiosity in class",
-      href: "/sparks",
-    },
-    {
-      icon: Camera,
-      title: "Photo-to-Lesson Kit",
-      description: "Transform photos into lesson plans",
-      href: "/lesson",
-    },
-    {
-      icon: Calendar,
-      title: "Weekly Planner",
-      description: "Generate weekly schedules",
-      href: "/planner",
-    },
-    {
-      icon: Presentation,
-      title: "AI Easy Slides",
-      description: "Create presentations with ease using AI",
-      href: "/slides",
-    },
-  ];
-
   const handleSignIn = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
     } catch (error) {
       console.error("Error signing in:", error);
-    }
-  };
-
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error("Error signing out:", error);
     }
   };
 
@@ -130,7 +122,7 @@ const DashboardPage = () => {
 
         {user && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-            {features.map((feature, index) => {
+            {FEATURES.map((feature, index) => {
               const IconComponent = feature.icon;
               return (
                 <a
