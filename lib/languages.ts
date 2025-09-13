@@ -73,8 +73,9 @@ export const translations = {
     configureLessonKit: "Configure your lesson kit",
     selectActivities: "Select the types of activities you want to generate.",
     worksheet: "Worksheet",
-    drawingActivity: "Drawing Activity",
     notes: "Notes",
+    numberOfQuestions: "Number of Questions",
+    questions: "Questions",
     generateLessonKit: "Generate Lesson Kit",
     autoPlanWeek: "Auto-Plan My Week",
     generateWeeklyPlan:
@@ -142,8 +143,9 @@ export const translations = {
     selectActivities:
       "उन गतिविधियों के प्रकारों का चयन करें जिन्हें आप उत्पन्न करना चाहते हैं।",
     worksheet: "कार्यपत्रक",
-    drawingActivity: "चित्रकला गतिविधि",
     notes: "नोट्स",
+    numberOfQuestions: "प्रश्नों की संख्या",
+    questions: "प्रश्न",
     generateLessonKit: "पाठ किट उत्पन्न करें",
     autoPlanWeek: "मेरे सप्ताह की स्वचालित योजना",
     generateWeeklyPlan:
@@ -212,8 +214,9 @@ export const translations = {
     selectActivities:
       "तुम्ही तयार करू इच्छित असलेल्या क्रियाकलापांचे प्रकार निवडा.",
     worksheet: "कार्यपत्रक",
-    drawingActivity: "चित्रकला क्रियाकलाप",
     notes: "नोट्स",
+    numberOfQuestions: "प्रश्नांची संख्या",
+    questions: "प्रश्न",
     generateLessonKit: "धडा किट तयार करा",
     autoPlanWeek: "माझ्या आठवड्याची स्वयंचलित योजना",
     generateWeeklyPlan:
@@ -284,8 +287,9 @@ export const translations = {
     selectActivities:
       "நீங்கள் உருவாக்க விரும்பும் செயல்பாடுகளின் வகைகளைத் தேர்ந்தெடுக்கவும்.",
     worksheet: "வேலைத்தாள்",
-    drawingActivity: "வரைதல் செயல்பாடு",
     notes: "குறிப்புகள்",
+    numberOfQuestions: "கேள்விகளின் எண்ணிக்கை",
+    questions: "கேள்விகள்",
     generateLessonKit: "பாடம் கிட் உருவாக்கவும்",
     autoPlanWeek: "எனது வாரத்தின் தானியங்கி திட்டம்",
     generateWeeklyPlan:
@@ -354,8 +358,9 @@ export const translations = {
     configureLessonKit: "మీ పాఠ కిట్‌ను కాన్ఫిగర్ చేయండి",
     selectActivities: "మీరు సృష్టించాలనుకునే కార్యకలాపాల రకాలను ఎంచుకోండి.",
     worksheet: "వర్క్‌షీట్",
-    drawingActivity: "డ్రాయింగ్ కార్యకలాపం",
     notes: "నోట్‌లు",
+    numberOfQuestions: "ప్రశ్నల సంఖ్య",
+    questions: "ప్రశ్నలు",
     generateLessonKit: "పాఠ కిట్‌ను సృష్టించండి",
     autoPlanWeek: "నా వారపు ఆటో ప్లాన్",
     generateWeeklyPlan:

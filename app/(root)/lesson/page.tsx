@@ -6,12 +6,18 @@ import {
   Upload,
   Check,
   FileText,
-  Palette,
   StickyNote,
   Loader2,
   Download,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useLanguage } from "@/lib/language-context";
 import { generateWorksheet, generateNotes } from "@/lib/ai/lesson.server";
 import ReactMarkdown from "react-markdown";
@@ -25,9 +31,9 @@ const LessonPage = () => {
   const [dragActive, setDragActive] = useState(false);
   const [activities, setActivities] = useState({
     worksheet: true,
-    drawing: false,
     notes: false,
   });
+  const [questionCount, setQuestionCount] = useState(10);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedWorksheet, setGeneratedWorksheet] = useState<string | null>(
     null
@@ -85,7 +91,7 @@ const LessonPage = () => {
       const promises = [];
 
       if (activities.worksheet) {
-        promises.push(generateWorksheet(formData));
+        promises.push(generateWorksheet(formData, questionCount));
       }
 
       if (activities.notes) {
@@ -639,23 +645,6 @@ const LessonPage = () => {
 
                 <div className="flex items-center space-x-3">
                   <button
-                    onClick={() => toggleActivity("drawing")}
-                    className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                      activities.drawing
-                        ? "bg-primary border-primary"
-                        : "border-muted-foreground/30 hover:border-primary/50"
-                    }`}
-                  >
-                    {activities.drawing && (
-                      <Check className="w-3 h-3 text-primary-foreground" />
-                    )}
-                  </button>
-                  <Palette className="w-5 h-5 text-primary" />
-                  <span className="font-medium">{t("drawingActivity")}</span>
-                </div>
-
-                <div className="flex items-center space-x-3">
-                  <button
                     onClick={() => toggleActivity("notes")}
                     className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                       activities.notes
@@ -671,6 +660,38 @@ const LessonPage = () => {
                   <span className="font-medium">{t("notes")}</span>
                 </div>
               </div>
+
+              {activities.worksheet && (
+                <div className="mt-6 p-4 bg-muted/30 rounded-lg">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-medium text-sm text-muted-foreground">
+                      {t("numberOfQuestions")}
+                    </span>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-between"
+                      >
+                        {questionCount} {t("questions")}
+                        <ChevronDown className="w-4 h-4 opacity-50" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-full">
+                      {[5, 10, 15, 20, 25, 30].map((count) => (
+                        <DropdownMenuItem
+                          key={count}
+                          onClick={() => setQuestionCount(count)}
+                          className="cursor-pointer"
+                        >
+                          {count} {t("questions")}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              )}
 
               <Button
                 onClick={handleGenerate}
