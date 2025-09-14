@@ -7,6 +7,7 @@ interface LanguageContextType {
   setLanguage: (language: Language) => void;
   t: (key: TranslationKey) => string;
   availableLanguages: typeof languages;
+  isClient: boolean;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(
@@ -17,8 +18,10 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [currentLanguage, setCurrentLanguage] = useState<Language>("en");
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     const savedLanguage = localStorage.getItem("vidyapak-language") as Language;
     if (savedLanguage && languages[savedLanguage]) {
       setCurrentLanguage(savedLanguage);
@@ -41,6 +44,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
         setLanguage,
         t,
         availableLanguages: languages,
+        isClient,
       }}
     >
       {children}

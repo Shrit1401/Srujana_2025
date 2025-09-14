@@ -20,7 +20,8 @@ import { useLanguage } from "@/lib/language-context";
 import textLogo from "@/public/textlogo.png";
 
 const Navbar = () => {
-  const { t, setLanguage, availableLanguages, currentLanguage } = useLanguage();
+  const { t, setLanguage, availableLanguages, currentLanguage, isClient } =
+    useLanguage();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -51,7 +52,7 @@ const Navbar = () => {
 
   return (
     <nav className="flex items-center justify-between px-18 py-4">
-      <a href="/dashboardd" className="flex items-center cursor-pointer">
+      <a href="/dashboard" className="flex items-center cursor-pointer">
         <Image
           src={textLogo}
           alt="Vidyapak Logo"
@@ -61,7 +62,7 @@ const Navbar = () => {
         />
       </a>
       <div className="flex items-center gap-4">
-        {user && (
+        {user && isClient && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
@@ -85,7 +86,7 @@ const Navbar = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         )}
-        {!loading && (
+        {!loading && isClient && (
           <>
             {user ? (
               <DropdownMenu>

@@ -53,7 +53,7 @@ const PlannerPage = () => {
       {!generatedPlan ? (
         <div className="max-w-2xl mx-auto px-6 py-12">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-5xl heading font-bold text-primary mb-4">
               {t("autoPlanWeek")}
             </h1>
             <p className="text-lg text-gray-600">{t("generateWeeklyPlan")}</p>
