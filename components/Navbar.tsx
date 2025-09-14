@@ -51,7 +51,7 @@ const Navbar = () => {
 
   return (
     <nav className="flex items-center justify-between px-18 py-4">
-      <a href="/" className="flex items-center cursor-pointer">
+      <a href="/dashboardd" className="flex items-center cursor-pointer">
         <Image
           src={textLogo}
           alt="Vidyapak Logo"
