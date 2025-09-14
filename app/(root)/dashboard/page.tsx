@@ -78,11 +78,11 @@ const DashboardPage = () => {
             <>
               <h1 className="text-6xl font-bold mb-2">
                 {t("welcome")},{" "}
-                <span className="text-primary">
-                  {user.displayName || "User"}
+                <span className="text-primary heading font-medium">
+                  {user.displayName?.split(" ")[0] || "User"}
                 </span>
               </h1>
-              <p className="text-2xl text-muted-foreground mb-4">
+              <p className="text-xl text-muted-foreground mb-4">
                 {t("heresWhat")}
               </p>
             </>
