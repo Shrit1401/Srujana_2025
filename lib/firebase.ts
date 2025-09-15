@@ -4,13 +4,13 @@ import { getFirestore } from "firebase/firestore";
 import { GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDNRaW6yEUbcUhk09HGP7m9Mj0AxazT7lc",
-  authDomain: "vidyapak-b0d52.firebaseapp.com",
-  projectId: "vidyapak-b0d52",
-  storageBucket: "vidyapak-b0d52.firebasestorage.app",
-  messagingSenderId: "678085503404",
-  appId: "1:678085503404:web:0e938c605964b9445d7209",
-  measurementId: "G-DKD535ZXST",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 export const app = initializeApp(firebaseConfig);
